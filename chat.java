@@ -22,29 +22,43 @@ public class chat implements Runnable{
 				  f = false;
 			  }
 		 }
-		in.close();
+		 
+		 Thread serv, clnt;
 		 
 		if( f == true )
 		{
 			contain c = new contain();
-			Thread b = new Thread(new server(c));
-			b.start();
-			synchronized(b)
+			serv = new Thread(new server(c));
+			serv.start();
+			synchronized(serv)
 			{
 				try{
-	                System.out.println("Waiting for b to complete...");
-	                b.wait();
+	                serv.wait();
 	            }catch(InterruptedException e){
 	                e.printStackTrace();
 	            }
 			}
 			
-	        (new Thread(new client(c.get()))).start();
+	        clnt = new Thread(new client(in, c.get()));//).start();
+	        clnt.start();
 		}else
 		{
-			(new Thread(new server())).start();
-			(new Thread(new client())).start();
+			serv = new Thread(new server());//).start();
+			clnt = new Thread(new client(in));//).start();
+			serv.start();
+			clnt.start();
 		}
+		
+		synchronized(clnt)
+		{
+			try{
+                clnt.wait();
+            }catch(InterruptedException e){
+                e.printStackTrace();
+            }
+		}
+
+		in.close();
 	}
 	
 	 public static void main(String args[]) {

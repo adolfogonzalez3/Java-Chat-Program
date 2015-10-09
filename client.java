@@ -7,27 +7,31 @@ import java.util.Scanner;
 
 public class client implements Runnable{
 
+	Scanner in;
 	public boolean flag;
 	public String ip;
 	
-	public client()
+	public client(Scanner passed)
 	{
 		flag = true;
+		in = passed;
+		
 	}
 	
-	public client(String s)
+	public client(Scanner passed, String s)
 	{
 		flag = false;
 		ip = s;
+		in = passed;
+		
 	}
 	
 	public void run()
 	{
-		Scanner in = null;
 		Socket client = null;
 		try
 		{
-			in = new Scanner(System.in);
+			//in = new Scanner(System.in);
 			int port = 9090;
 			String s;
 			if( flag == true )
@@ -57,12 +61,10 @@ public class client implements Runnable{
 			try {
 				if( client != null )
 					client.close();
-				in.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			in.close();
 		}
 	}
 }
