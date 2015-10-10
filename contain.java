@@ -6,12 +6,12 @@ public class contain {
 		str = "";
 	}
 	
-	public void update(String s )
+	public synchronized void update(String s )
 	{
 		str = s;
 	}
 	
-	public String get()
+	public synchronized String get()
 	{
 		return str;
 	}

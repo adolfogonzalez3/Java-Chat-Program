@@ -1,6 +1,10 @@
 import java.util.Scanner;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class chat implements Runnable{
+	
+	final Lock lock = new ReentrantLock();
 	
 	public void run()
 	{
@@ -28,17 +32,21 @@ public class chat implements Runnable{
 		if( f == true )
 		{
 			contain c = new contain();
-			serv = new Thread(new server(c));
+			serv = new Thread(new server(c,this));
 			serv.start();
-			synchronized(serv)
+			
+			synchronized(this)
 			{
-				try{
-	                serv.wait();
-	            }catch(InterruptedException e){
-	                e.printStackTrace();
-	            }
+				try {
+					this.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			
+			c.update(trimToIP(c.get()));
+			System.out.println(c.get());
 	        clnt = new Thread(new client(in, c.get()));//).start();
 	        clnt.start();
 		}else
@@ -59,6 +67,23 @@ public class chat implements Runnable{
 		}
 
 		in.close();
+	}
+	
+	public String trimToIP(String str)
+	{
+		String temp = "";
+		boolean flag = false;
+		for( int i = 1; i < str.length() && !flag; i++ )
+		{
+			if(str.charAt(i) != ':' )
+			{
+				temp += str.charAt(i);
+			}else
+			{
+				flag = true;
+			}
+		}
+		return temp;
 	}
 	
 	 public static void main(String args[]) {

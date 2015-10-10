@@ -1,4 +1,6 @@
 import java.io.DataInputStream;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -8,20 +10,21 @@ public class server implements Runnable{
 
 	public boolean flag;
 	public contain cont;
+	private chat chatter;
 	
 	public server()
 	{
 		flag = false;
 	}
 	
-	public server(contain c )
+	public server(contain c, chat ch )
 	{
 		flag = true;
 		cont = c;
+		chatter = ch;
 	}
 	
 	public void run() {
-		 
 			 ServerSocket ss = null;
 			try {
 				ss = new ServerSocket(9090);
@@ -31,17 +34,17 @@ public class server implements Runnable{
 				{
 					try
 					{
-						Socket server;
+						Socket server = null;
 						//System.out.println("Waiting for client on port " +ss.getLocalPort() + "...");
-						System.out.println("Server IP: " + ss.getLocalSocketAddress() );				
+						//System.out.println("Server IP: " + ss.get );				
 						//System.out.println("Just connected to " + server.getRemoteSocketAddress());
-						if( flag )
+						if( flag == true )
 						{
-							synchronized(this)
+							synchronized(chatter)
 							{
 								server = ss.accept();
 								cont.update(server.getRemoteSocketAddress().toString());
-								notify();
+								chatter.notify();
 							}
 						}else
 						{
