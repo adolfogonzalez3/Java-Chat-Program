@@ -28,13 +28,13 @@ public class chat implements Runnable{
 		 }
 		 
 		 Thread serv, clnt;
-		 
+		 status st = new status();
 		if( f == true )
 		{
+			//lock.unlock();
 			contain c = new contain();
-			serv = new Thread(new server(c,this));
-			serv.start();
-			
+			serv = new Thread(new server(st, lock,c,this));
+			serv.start();			
 			synchronized(this)
 			{
 				try {
@@ -46,13 +46,12 @@ public class chat implements Runnable{
 			}
 			
 			c.update(trimToIP(c.get()));
-			System.out.println(c.get());
-	        clnt = new Thread(new client(in, c.get()));//).start();
+	        clnt = new Thread(new client(st, lock, in, c.get()));//).start();
 	        clnt.start();
 		}else
 		{
-			serv = new Thread(new server());//).start();
-			clnt = new Thread(new client(in));//).start();
+			serv = new Thread(new server(st, lock));//).start();
+			clnt = new Thread(new client(st, lock, in));//).start();
 			serv.start();
 			clnt.start();
 		}
