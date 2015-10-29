@@ -22,13 +22,6 @@ public class server implements Runnable{
 		flag = false;
 		lock = l;
 		st = stat;
-		/*try {
-			lock.tryLock(5,TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		lock.lock();*/
 	}
 	
 	public server(status stat, Lock l, contain c, chat ch )
@@ -38,18 +31,13 @@ public class server implements Runnable{
 		chatter = ch;
 		st = stat;
 		lock = l;
-		/*
-		try {
-			lock.tryLock(5,TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		lock.lock();*/
 	}
 	
 	public void run() {
 			 ServerSocket ss = null;
+			 // if the user wants to wait for another user to connect then the server object will wait for the other user to connect
+			 // and then get the address of the other user which is passed to the chat which is then passed to the server
+			 // if the user wants to connect to another user then the server waits for the other user to respond
 			try {
 				ss = new ServerSocket(9090);
 				ss.setSoTimeout(100000);
@@ -57,9 +45,6 @@ public class server implements Runnable{
 				try
 				{
 					Socket server = null;
-					//System.out.println("Waiting for client on port " +ss.getLocalPort() + "...");
-					//System.out.println("Server IP: " + ss.get );				
-					//System.out.println("Just connected to " + server.getRemoteSocketAddress());
 					if( flag == true )
 					{
 						synchronized(chatter)
@@ -72,23 +57,10 @@ public class server implements Runnable{
 					{
 						server = ss.accept();
 					}
-					//System.out.println("Before Server lock.");
-					/*synchronized(lock)
-					{
-						try {
-							lock.unlock();
-							lock.wait();
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}*/
-					//System.out.println("After Server lock.");
 					DataInputStream in = new DataInputStream(server.getInputStream()); // message from client
 					String input;
 					boolean flag = false;
 					DataOutputStream out = new DataOutputStream(server.getOutputStream()); // message to client
-					//out.writeUTF("Thank you for connecting to Adolfo's server " + server.getLocalSocketAddress() +". Goodbye!");
 					while(!st.get() && !flag)
 					{	
 						if( in.available() != 0 )
@@ -113,17 +85,8 @@ public class server implements Runnable{
 						}
 												
 					}
-					//System.out.println("After server while loop.");
 					st.update(true);
-					/*
-					if( lock.tryLock() )
-					{
-						lock.unlock();
-						System.out.println("Server unlocked lock.");
-					}
-					*/
 					server.close();
-					//System.out.println("Done!");
 				}catch(SocketTimeoutException s)
 				{ 
 					System.out.println("Socket timed out!"); 

@@ -38,9 +38,11 @@ public class client implements Runnable{
 			Socket client = null;
 			try
 			{
-				//in = new Scanner(System.in);
 				int port = 9090;
 				String s;
+				// if the user wanted to wait for another user to connect then the client object will wait for the server object to get the
+				// IP which is then passed to the client object through the contain object
+				// if the user wanted to connect to another user then the client object will ask the user for an IP
 				if( flag == true )
 				{
 					System.out.print("What do you want to connect to?: ");
@@ -49,44 +51,12 @@ public class client implements Runnable{
 				{
 					s = ip;
 				}
-				/*synchronized(lock)
-				{
-					while(lock.tryLock())
-					{
-						
-					}
-				}*/
 				client = new Socket(s, port);
 				System.out.println("Just connected to " + client.getRemoteSocketAddress());
 				DataOutputStream out = new DataOutputStream(client.getOutputStream()); // message to server
 				String input;
 				boolean flag = false;
-				/*
-				try {
-					this.wait(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}*/
-				//System.out.println("Before client lock.");
-				/*synchronized(lock)
-				{
-					while(!lock.tryLock())
-					{
-						
-					}
-					lock.notify();
-				}*/
-				//System.out.println("After client lock.");
-				//System.out.println(client.getLocalAddress());
 				String localIP = client.getLocalAddress().toString().substring(1);
-				//System.out.println(localIP);
-				/*
-				if( lock.tryLock() )
-				{
-					System.out.println("Have client lock.");
-				}
-				*/
 				while(!st.get() && !flag)
 				{
 					if( System.in.available() != 0 )
@@ -96,6 +66,7 @@ public class client implements Runnable{
 						{
 							if( input.charAt(0) == '/' )
 							{
+								// the quit or exit command must be preceded by a forward slash
 								if( input.compareTo("/quit") == 0 || input.compareTo("/exit") == 0 )
 								{
 									flag = true;
@@ -111,18 +82,7 @@ public class client implements Runnable{
 						}
 					}					
 				}
-				//System.out.println("After client while loop.");
 				st.update(true);
-				//out.writeUTF(	"Hello from Adolfo’s client " + client.getLocalSocketAddress());
-				//DataInputStream in = new DataInputStream(client.getInputStream()); // message from server
-				//System.out.println("Server says " +	in.readUTF());
-				/*
-				if(lock.tryLock())
-				{
-					lock.unlock();
-					System.out.println("Client unlocked lock.");
-				}
-				*/
 				client.close();
 			}catch(IOException e)
 			{
